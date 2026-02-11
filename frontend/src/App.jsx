@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import Books from "./components/Books";
 import Members from "./components/Members";
-import Suppliers from "./components/suppliers";
+import Suppliers from "./components/Suppliers";
 import Publishers from "./components/publishers";
 import Borrows from "./components/Borrows";
 
