@@ -75,7 +75,7 @@ function Home({ setPage }) {
        
       </div>
 
-<div className="py-2 text-center  italic">Designed by SANTA
+<div className="py-2 text-center  italic">Designed by N.Elyse
         {/* <p className="text-gray-600 font-medium italic">Designed by SANTA  </p> */}
       </div> 
 
