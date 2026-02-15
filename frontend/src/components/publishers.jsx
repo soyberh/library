@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../api";
 import { useEffect, useState } from "react";
 
 function Publishers() {
@@ -8,10 +8,9 @@ function Publishers() {
   const [phone, setPhone] = useState("");
   const [editId, setEditId] = useState(null);
 
-  // Fetch data from backend
   const fetchPublishers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/publishers");
+      const res = await api.get("/publishers");
       setPublishers(res.data);
     } catch (err) {
       console.error("Error fetching publishers:", err);
@@ -31,16 +30,16 @@ function Publishers() {
     const publisherData = { publisher_name, email, phone };
 
     if (editId) {
-      axios.put(`http://localhost:5000/publishers/${editId}`, publisherData)
+      api.put(`/publishers/${editId}`, publisherData)
         .then(() => {
           clearForm();
-          fetchPublishers(); // Refresh table
+          fetchPublishers();
         });
     } else {
-      axios.post("http://localhost:5000/publishers", publisherData)
+      api.post("/publishers", publisherData)
         .then(() => {
           clearForm();
-          fetchPublishers(); // Refresh table
+          fetchPublishers();
         });
     }
   };
@@ -52,6 +51,12 @@ function Publishers() {
     setPhone(p.phone);
   };
 
+  const deletePublisher = (id) => {
+    if (window.confirm("Delete this publisher?")) {
+      api.delete(`/publishers/${id}`).then(() => fetchPublishers());
+    }
+  };
+
   const clearForm = () => {
     setEditId(null);
     setPublisherName("");
@@ -59,49 +64,20 @@ function Publishers() {
     setPhone("");
   };
 
-  const deletePublisher = (id) => {
-    if(window.confirm("Are you sure?")) {
-      axios.delete(`http://localhost:5000/publishers/${id}`).then(fetchPublishers);
-    }
-  };
-
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4 text-center">Publishers Management</h2>
-
-      <div className="flex justify-center mb-6">
-        <div className="bg-white p-4 shadow w-full max-w-md rounded border-t-4 border-green-500">
-          <input
-            className="border p-2 w-full mb-2"
-            placeholder="Publisher Name"
-            value={publisher_name}
-            onChange={e => setPublisherName(e.target.value)}
-          />
-          <input
-            className="border p-2 w-full mb-2"
-            placeholder="Email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-          />
-          <input
-            className="border p-2 w-full mb-4"
-            placeholder="Phone"
-            value={phone}
-            onChange={e => setPhone(e.target.value)}
-          />
-
+    <div className="p-4">
+      <div className="bg-white p-4 rounded shadow mb-4">
+        <h2 className="text-xl font-bold mb-3">{editId ? "Edit Publisher" : "Add New Publisher"}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <input className="border p-2 rounded" placeholder="Publisher Name" value={publisher_name} onChange={(e) => setPublisherName(e.target.value)} />
+          <input className="border p-2 rounded" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className="border p-2 rounded" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          
           <div className="flex gap-2">
-            <button
-              onClick={handleSave}
-              className={`p-2 w-full rounded text-white ${editId ? 'bg-orange-500' : 'bg-green-600'}`}
-            >
+            <button onClick={handleSave} className={`p-2 w-full text-white rounded font-bold ${editId ? 'bg-orange-500' : 'bg-blue-600'}`}>
               {editId ? "Update Publisher" : "Add Publisher"}
             </button>
-            {editId && (
-              <button onClick={clearForm} className="bg-gray-500 text-white p-2 rounded">
-                Cancel
-              </button>
-            )}
+            {editId && <button onClick={clearForm} className="bg-gray-500 text-white p-2 rounded">Cancel</button>}
           </div>
         </div>
       </div>
@@ -118,7 +94,7 @@ function Publishers() {
         </thead>
         <tbody>
           {publishers.length === 0 ? (
-            <tr><td colSpan="5" className="p-4">No publishers found in database.</td></tr>
+            <tr><td colSpan="5" className="p-4">No publishers found.</td></tr>
           ) : (
             publishers.map((p) => (
               <tr key={p.publisher_id} className="border-t hover:bg-gray-50">

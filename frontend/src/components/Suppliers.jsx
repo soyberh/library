@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "../api";
 import { useEffect, useState } from "react";
 
 function Suppliers() {
@@ -9,7 +9,7 @@ function Suppliers() {
   const [editId, setEditId] = useState(null);
 
   const fetchSuppliers = () => {
-    axios.get("http://localhost:5000/suppliers")
+    api.get("/suppliers")
       .then(res => setSuppliers(res.data))
       .catch(err => console.error(err));
   };
@@ -25,12 +25,12 @@ function Suppliers() {
     const data = { supplier_name, email, phone };
 
     if (editId) {
-      axios.put(`http://localhost:5000/suppliers/${editId}`, data).then(() => {
+      api.put(`/suppliers/${editId}`, data).then(() => {
         clearForm();
         fetchSuppliers();
       });
     } else {
-      axios.post("http://localhost:5000/suppliers", data).then(() => {
+      api.post("/suppliers", data).then(() => {
         clearForm();
         fetchSuppliers();
       });
@@ -44,6 +44,12 @@ function Suppliers() {
     setPhone(s.phone);
   };
 
+  const deleteSupplier = (id) => {
+    if(window.confirm("Delete this supplier?")) {
+      api.delete(`/suppliers/${id}`).then(() => fetchSuppliers());
+    }
+  };
+
   const clearForm = () => {
     setEditId(null);
     setName("");
@@ -51,21 +57,14 @@ function Suppliers() {
     setPhone("");
   };
 
-  const deleteSupplier = (id) => {
-    if(window.confirm("Delete this supplier?")) {
-      axios.delete(`http://localhost:5000/suppliers/${id}`).then(fetchSuppliers);
-    }
-  };
-
   return (
-    <div className="p-6">
-      <h2 className="text-xl flex justify-center font-bold mb-4">Suppliers Management</h2>
-
-      <div className="flex justify-center mb-6">
-        <div className="bg-white p-4 shadow w-full max-w-md rounded border-t-4 border-green-500">
-          <input className="border p-2 w-full mb-2" placeholder="Supplier Name" value={supplier_name} onChange={(e) => setName(e.target.value)} />
-          <input className="border p-2 w-full mb-2" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <input className="border p-2 w-full mb-4" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+    <div className="p-4">
+      <div className="bg-white p-4 rounded shadow mb-4">
+        <h2 className="text-xl font-bold mb-3">{editId ? "Update Supplier" : "Add New Supplier"}</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <input className="border p-2 rounded" placeholder="Supplier Name" value={supplier_name} onChange={(e) => setName(e.target.value)} />
+          <input className="border p-2 rounded" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input className="border p-2 rounded" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
           
           <div className="flex gap-2">
             <button onClick={handleSave} className={`p-2 w-full text-white rounded font-bold ${editId ? 'bg-orange-500' : 'bg-green-600'}`}>
