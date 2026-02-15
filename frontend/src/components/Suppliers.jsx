@@ -1,4 +1,4 @@
-import api from "../api";
+import api from "../api"; // Pointing to your src/api.js
 import { useEffect, useState } from "react";
 
 function Suppliers() {
@@ -59,7 +59,7 @@ function Suppliers() {
 
   return (
     <div className="p-4">
-      <div className="bg-white p-4 rounded shadow mb-4">
+      <div className="bg-white p-4 rounded shadow mb-4 border-t-4 border-green-400">
         <h2 className="text-xl font-bold mb-3">{editId ? "Update Supplier" : "Add New Supplier"}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <input className="border p-2 rounded" placeholder="Supplier Name" value={supplier_name} onChange={(e) => setName(e.target.value)} />
