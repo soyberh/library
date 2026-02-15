@@ -1,10 +1,10 @@
-import api from "../api"; // Use api instead of axios
+import axios from "axios";
 import { useEffect, useState } from "react";
 
 function Books() {
   const [books, setBooks] = useState([]);
-  const [suppliers, setSuppliers] = useState([]);
-  const [publishers, setPublishers] = useState([]);
+  const [suppliers, setSuppliers] = useState([]); // To store supplier list
+  const [publishers, setPublishers] = useState([]); // To store publisher list
   
   const [title, setTitle] = useState("");
   const [publication_year, setYear] = useState("");
@@ -12,11 +12,12 @@ function Books() {
   const [publisher_id, setPublisher] = useState("");
   const [editId, setEditId] = useState(null);
 
+  // Fetch all required data
   const fetchData = async () => {
     try {
-      const resBooks = await api.get("/books");
-      const resSupps = await api.get("/suppliers");
-      const resPubs = await api.get("/publishers");
+      const resBooks = await axios.get("http://localhost:5000/books");
+      const resSupps = await axios.get("http://localhost:5000/suppliers");
+      const resPubs = await axios.get("http://localhost:5000/publishers");
       
       setBooks(resBooks.data);
       setSuppliers(resSupps.data);
@@ -39,12 +40,12 @@ function Books() {
     const data = { title, publication_year, supplier_id, publisher_id };
 
     if (editId) {
-      api.put(`/books/${editId}`, data).then(() => {
+      axios.put(`http://localhost:5000/books/${editId}`, data).then(() => {
         clearForm();
         fetchData();
       });
     } else {
-      api.post("/books", data).then(() => {
+      axios.post("http://localhost:5000/books", data).then(() => {
         clearForm();
         fetchData();
       });
@@ -60,30 +61,42 @@ function Books() {
   };
 
   const clearForm = () => {
-    setTitle(""); setYear(""); setSupplier(""); setPublisher(""); setEditId(null);
+    setTitle(""); 
+    setYear(""); 
+    setSupplier(""); 
+    setPublisher(""); 
+    setEditId(null);
   };
 
   const deleteBook = (id) => {
-    api.delete(`/books/${id}`).then(fetchData);
+    axios.delete(`http://localhost:5000/books/${id}`).then(fetchData);
   };
 
   return (
     <div className="p-6">
       <h2 className="text-xl flex justify-center font-bold mb-4">Books Management</h2>
+      
       <div className="flex justify-center mb-6">
         <div className="bg-white p-4 shadow w-full max-w-md rounded border-t-4 border-blue-500">
           <input className="border p-2 w-full mb-2" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
           <input className="border p-2 w-full mb-2" placeholder="Year" value={publication_year} onChange={(e) => setYear(e.target.value)} />
+          
           <label className="text-sm text-gray-600">Select Supplier:</label>
           <select className="border p-2 w-full mb-2" value={supplier_id} onChange={(e) => setSupplier(e.target.value)}>
             <option value="">-- Choose Supplier --</option>
-            {suppliers.map(s => <option key={s.supplier_id} value={s.supplier_id}>{s.supplier_name}</option>)}
+            {suppliers.map(s => (
+              <option key={s.supplier_id} value={s.supplier_id}>{s.supplier_name}</option>
+            ))}
           </select>
+
           <label className="text-sm text-gray-600">Select Publisher:</label>
           <select className="border p-2 w-full mb-2" value={publisher_id} onChange={(e) => setPublisher(e.target.value)}>
             <option value="">-- Choose Publisher --</option>
-            {publishers.map(p => <option key={p.publisher_id} value={p.publisher_id}>{p.publisher_name}</option>)}
+            {publishers.map(p => (
+              <option key={p.publisher_id} value={p.publisher_id}>{p.publisher_name}</option>
+            ))}
           </select>
+
           <div className="flex gap-2">
             <button onClick={handleSave} className={`p-2 w-full text-white rounded ${editId ? 'bg-orange-500' : 'bg-blue-600'}`}>
               {editId ? "Update Book" : "Add Book"}
@@ -92,6 +105,7 @@ function Books() {
           </div>
         </div>
       </div>
+
       <table className="w-full bg-white shadow text-sm">
         <thead className="bg-gray-200">
           <tr><th>ID</th><th>Title</th><th>Supplier ID</th><th>Publisher ID</th><th>Actions</th></tr>
