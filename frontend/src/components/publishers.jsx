@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
+const API_BASE_URL = "https://librarybackend-production-bf00.up.railway.app/publishers";
+
 function Publishers() {
   const [publishers, setPublishers] = useState([]);
   const [publisher_name, setPublisherName] = useState("");
@@ -11,7 +13,7 @@ function Publishers() {
   // Fetch data from backend
   const fetchPublishers = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/publishers");
+      const res = await axios.get("https://librarybackend-production-bf00.up.railway.app/publishers");
       setPublishers(res.data);
     } catch (err) {
       console.error("Error fetching publishers:", err);
@@ -31,13 +33,13 @@ function Publishers() {
     const publisherData = { publisher_name, email, phone };
 
     if (editId) {
-      axios.put(`http://localhost:5000/publishers/${editId}`, publisherData)
+      axios.put(`https://librarybackend-production-bf00.up.railway.app/publishers/${editId}`, publisherData)
         .then(() => {
           clearForm();
           fetchPublishers(); // Refresh table
         });
     } else {
-      axios.post("http://localhost:5000/publishers", publisherData)
+      axios.post("https://librarybackend-production-bf00.up.railway.app/publishers", publisherData)
         .then(() => {
           clearForm();
           fetchPublishers(); // Refresh table
@@ -61,7 +63,7 @@ function Publishers() {
 
   const deletePublisher = (id) => {
     if(window.confirm("Are you sure?")) {
-      axios.delete(`http://localhost:5000/publishers/${id}`).then(fetchPublishers);
+      axios.delete(`https://librarybackend-production-bf00.up.railway.app/publishers/${id}`).then(fetchPublishers);
     }
   };
 
